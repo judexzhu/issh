@@ -1,0 +1,28 @@
+{
+  "name": "issh",
+  "version": "1.0.0",
+  "description": "A useful web application to the command line \"ssh\"",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/our-bts/issh.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/our-bts/issh/issues"
+  },
+  "homepage": "https://github.com/our-bts/issh#readme",
+  "dependencies": {
+    "express": "^4.15.3",
+    "nedb": "^1.8.0",
+    "ws": "^3.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
