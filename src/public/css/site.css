@@ -1,0 +1,58 @@
+html, body {
+  background: white;
+}
+
+.navbar {
+  margin-bottom: 0;
+}
+
+.navbar-brand {
+  border-right: 1px solid rgba(0, 0, 0, .2);
+  width: 200px;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-header a {
+  color: white;
+}
+
+.navbar-header .fa-reorder {
+  cursor: pointer;
+}
+
+.navbar-header .fa-reorder:hover {
+  color: tomato;
+}
+
+.navbar-brand .logo {
+  flex: 1;
+  text-align: center;
+}
+
+.side-bar {
+  position: fixed;
+  width: 200px;
+  height: calc(100vh - 40px);
+  margin-top: 40px;
+  background: lightgray;
+  transition: all ease 500ms;
+}
+
+.content {
+  width: calc(100% - 200px);
+  margin-left: 200px;
+  min-height: calc(100vh + 20px);
+  background: darkgray;
+  transition: all ease 500ms;
+}
+
+body.mini-sidebar .side-bar {
+  width: 0;
+  overflow: hidden;
+}
+
+body.mini-sidebar .content {
+  width: 100%;
+  margin-left: 0;
+}
