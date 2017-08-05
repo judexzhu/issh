@@ -9,55 +9,64 @@
 
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/toastr.min.css">
   <link rel="stylesheet" href="css/site.css">
 </head>
 
 <body ng-app="iSSH" ng-controller="MainCtrl">
 
-  <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+  <ng-include src="'pages/login.html'" ng-if="!isLogin"></ng-include>
+
+  <div ng-if="isLogin">
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <div class="navbar-brand" style="color: white">
-          <i class="fa fa-reorder" ng-click="toggleSidebar()"></i>
-          <div class="logo">
-            <a href="javascript: void(0)">
+          <div class="navbar-brand" style="color: white">
+            <i class="fa fa-reorder" ng-click="toggleSidebar()"></i>
+            <div class="logo">
+              <a href="javascript: void(0)">
               <span class="text-danger">i</span>
               <span>SSH</span>
             </a>
+            </div>
           </div>
         </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li><a href="#">Connect</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">{{ UserInfo.displayName }}</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li><a href="#">Connect</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="#">User</a></li>
-        </ul>
-      </div>
+    </nav>
+
+    <div class="container">
     </div>
-  </nav>
 
-  <div class="container">
+    <div class="side-bar">
+
+    </div>
+    <div class="content">
+
+    </div>
   </div>
 
-   <div class="side-bar">
-
-  </div>
-  <div class="content">
-
-  </div> 
 
   <script src="js/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="js/toastr.min.js"></script>
+  <script src="js/site.js"></script>
   <script src="js/angular.min.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/user.js"></script>
 </body>
 
 </html>
