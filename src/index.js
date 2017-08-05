@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const errorHandler = require('errorhandler');
 const session = require('express-session');
 const passport = require('passport');
+const sshProxy = require('./ssh/sshProxy');
 
 let app = express();
 
@@ -35,16 +36,8 @@ require('./routes/ssh-routes')(app);
 app.use(errorHandler());
 
 let server = http.createServer(app);
-let wss = new WebSocket.Server({ server });
-
-wss.on('connection', (ws, req) => {
-  let location = url.parse(req.url, true);
-
-  ws.on('message', (message) => {
-    console.log('received: %s', message);
-  });
-
-});
+let wss = new WebSocket.Server({ server: server, maxPayload: 1000 });
+sshProxy.handler(wss);
 
 server.listen(port, function listening() {
   console.log(`Listening on ${server.address().address}:${server.address().port}`);
