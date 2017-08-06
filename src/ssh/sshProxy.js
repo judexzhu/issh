@@ -18,14 +18,20 @@ exports.handler = (wss) => {
 }
 
 let install_ws_listeners = (ws) => {
-  
+
   ws.isAlive = true;
   ws.sshClient.command = '';
   ws.on('pong', () => this.isAlive = true);
 
   ws.on('message', (message) => {
     console.log('received: %s', message);
-    ws.sshClient.stream && ws.sshClient.stream.write(message);
+    if (message.startsWith('^_^')) {
+      message = message.replace('^_^', '');
+      size = message.split('|');
+      ws.sshClient.stream && ws.sshClient.stream.setWindow(size[0], size[1]);
+    } else {
+      ws.sshClient.stream && ws.sshClient.stream.write(message);
+    }
   });
 
   ws.on('close', () => {
@@ -63,6 +69,7 @@ let install_ws_ssh = (ws, querys) => {
           ws.sshClient.command = '';
           ws.send(data.toString());
         });
+
       });
     })
     .on('error', (err) => {
