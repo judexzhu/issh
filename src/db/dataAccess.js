@@ -46,35 +46,9 @@ exports.insertUser = (user) => {
   })
 }
 
-exports.findUserServerById = (userName, serverId) => {
+exports.updateUserServers = (userName, servers) => {
   return new Promise((resolve, reject) => {
-    db.findOne({ $and: [{ userName: userName }, { servers: { $elemMatch: { _id: serverId } } }] }, (err, doc) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(doc);
-      }
-    })
-  })
-}
-
-exports.updateUserServers = (userName, server) => {
-  return new Promise((resolve, reject) => {
-    db.update({ userName: userName }, { $addToSet: { servers: server } }, (err, numReplaced) => {
-      if (err) {
-        reject(err);
-      } else if (numReplaced === 0) {
-        reject(new Error(`user: ${userName} not exists`));
-      } else {
-        resolve();
-      }
-    })
-  })
-}
-
-exports.removeUserServers = (userName, server) => {
-  return new Promise((resolve, reject) => {
-    db.update({ userName: userName }, { $pull: { servers: server } }, (err, numReplaced) => {
+    db.update({ userName: userName }, { $set: { servers: servers } }, (err, numReplaced) => {
       if (err) {
         reject(err);
       } else if (numReplaced === 0) {

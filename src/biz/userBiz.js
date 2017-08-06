@@ -1,5 +1,6 @@
 const da = require('../db/dataAccess');
 const ssoda = require('../db/sso');
+const _ = require('lodash');
 
 exports.login = (req, res, next) => {
   res.json(req.user);
@@ -34,31 +35,33 @@ exports.updateUserServers = (req, res, next) => {
   ensureServerId(server);
 
   updateServers(userName, server._id, server)
-  .then(() => res.sendStatus(202))
-  .catch((err) => next(err));
+    .then(() => res.sendStatus(202))
+    .catch((err) => next(err));
 }
 
-exports.removeUserServers = (req, res, next) =>{
+exports.removeUserServers = (req, res, next) => {
   var serverId = req.params.id;
   var userName = req.user.userName;
 
   updateServers(userName, serverId)
-  .then(() => res.sendStatus(202))
-  .catch((err) => next(err));
+    .then(() => res.sendStatus(202))
+    .catch((err) => next(err));
 }
 
 let updateServers = async (userName, serverId, newServer) => {
-  var user = await da.findUserServerById(userName, serverId);
-  if(user){
-    await da.removeUserServers(userName, user.servers[0]);
+  var user = await da.findUserByName(userName);
+  user.servers = user.servers || [];
+  _.remove(user.servers, (s) => s._id === serverId);
+  if (newServer) {
+    user.servers.push(newServer);
+    user.servers = _.sortBy(user.servers, ['group', 'displayName']);
   }
-  if(newServer){    
-    await da.updateUserServers(userName, newServer);
-  }
+  await da.updateUserServers(userName, user.servers);
 }
 
 let ensureServerId = (server) => {
   server._id = server._id || `${server.user}@${server.ip}`;
+  server.displayName = server.displayName || server._id;
 }
 
 exports.registerUser = (req, res, next) => {
