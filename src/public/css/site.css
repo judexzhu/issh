@@ -21,6 +21,10 @@ body {
   margin-right: 0;
 }
 
+.no-margin {
+  margin: 0 !important;
+}
+
 .navbar {
   margin-bottom: 0;
 }
@@ -54,16 +58,117 @@ body {
   width: 200px;
   height: calc(100vh - 40px);
   margin-top: 40px;
-  background: lightgray;
-  transition: all ease 500ms;
+  background: #546575;
+  transition: all ease 300ms;
+}
+
+.side-bar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.side-bar ul li {
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+
+.side-bar ul li div {
+  cursor: pointer;
+  color: white;
+  padding-left: 20px;
+  height: 34px;
+  line-height: 34px;
+}
+
+.side-bar ul li div.active,
+.side-bar ul li div:hover {
+  color: tomato;
+  font-weight: 700;
+}
+
+.side-bar ul li div i.fa.fa-tag {
+  margin-right: 3px;
+}
+
+.side-bar ul li.has-children li {
+  border-bottom: none;
+}
+
+.side-bar ul li.has-children.expaned i.fa.fa-caret-down {
+  transform: rotateX(180deg);
+  transition: all ease 300ms;
+}
+
+.side-bar ul li.has-children>div {
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+}
+
+.side-bar ul li.has-children>div>span {
+  flex: 1;
+}
+
+.side-bar ul li.has-children>div>i.fa {
+  margin: 0 4px;
+}
+
+.side-bar ul li.has-children ul {
+  padding: 10px 0 10px 10px;
+  background-color: rgba(0, 0, 0, .2);
+}
+
+.side-bar ul li.has-children ul li div {
+  font-size: 13px;
+  padding-left: 15px;
+  height: 30px;
+  line-height: 30px;
+}
+
+.server-list li {
+  display: flex;
+  align-items: center;
+}
+
+.server-list li>div:first-child {
+  flex: 1;
+}
+
+.server-list li>div:last-child {
+  width: 34px;
+  margin-right: 5px;
 }
 
 .content {
+  padding: 10px;
   width: calc(100% - 200px);
+  margin-top: 40px;
   margin-left: 200px;
-  min-height: calc(100vh);
-  background: darkgray;
-  transition: all ease 500ms;
+  height: calc(100vh - 40px);
+  background: white;
+  transition: all ease 300ms;
+}
+
+.multi-term {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.multi-term .tab-pane {
+  width: 50%;  
+  margin-bottom: 10px;  
+  display: block;
+}
+
+.nav-tabs>li>a {
+  background-color: rgba(0, 0, 0, .2);
+  color: initial;
+}
+
+.nav-tabs>li.active>a,
+.nav-tabs>li>a:hover {
+  color: white;
+  font-weight: 600;
 }
 
 body.mini-sidebar .side-bar {
@@ -136,4 +241,28 @@ body.mini-sidebar .content {
 .has-error .form-control,
 .has-error .form-control:focus {
   border-width: 2px;
+}
+
+label,
+.radio label,
+.checkbox label,
+.help-block {
+  font-size: 13px;
+}
+
+.m-t-sm {
+  margin-top: 10px;
+}
+
+.m-l-sm {
+  margin-left: 5px;
+}
+
+.content .nav>li>a {
+  padding: 5px 10px;
+}
+
+.navbar-default .navbar-nav>li>a {
+  font-size: larger;
+  font-weight: 600;
 }

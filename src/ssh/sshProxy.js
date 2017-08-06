@@ -8,13 +8,13 @@ exports.handler = (wss) => {
     install_ws_listeners(ws);
   });
 
-  const interval = setInterval(() => {
-    wss.clients.forEach(ws => {
-      if (ws.isAlive === false) return ws.terminate();
-      ws.isAlive = false;
-      ws.ping('', false, true);
-    });
-  }, 30000);
+  // const interval = setInterval(() => {
+  //   wss.clients.forEach(ws => {
+  //     if (ws.isAlive === false) return ws.terminate();
+  //     ws.isAlive = false;
+  //     ws.ping('', false, true);
+  //   });
+  // }, 30000);
 }
 
 let install_ws_listeners = (ws) => {
@@ -28,7 +28,7 @@ let install_ws_listeners = (ws) => {
     if (message.startsWith('^_^')) {
       message = message.replace('^_^', '');
       size = message.split('|');
-      ws.sshClient.stream && ws.sshClient.stream.setWindow(size[0], size[1]);
+      ws.sshClient.stream && ws.sshClient.stream.setWindow(parseInt(size[0]), parseInt(size[1]));
     } else {
       ws.sshClient.stream && ws.sshClient.stream.write(message);
     }
@@ -52,10 +52,10 @@ let install_ws_ssh = (ws, querys) => {
 
   ws.sshClient
     .on('ready', () => {
-      ws.send('ssh ready');
+      // ws.send('ssh ready');
       ws.sshClient.shell({
-        rows: querys.rows,
-        cols: querys.cols
+        rows: parseInt(querys.rows),
+        cols: parseInt(querys.cols)
       }, (err, stream) => {
         if (err) throw err;
         ws.sshClient.stream = stream;

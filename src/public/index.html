@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/vendor/bootstrap.min.css">
   <link rel="stylesheet" href="css/vendor/font-awesome.min.css">
   <link rel="stylesheet" href="css/vendor/toastr.min.css">
+  <link rel="stylesheet" href="css/vendor/xterm.min.css">
   <link rel="stylesheet" href="css/site.css">
 </head>
 
@@ -40,6 +41,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
             <li><a href="javascript: void(0)" ng-click="showConnectToServerModal()">Connect</a></li>
+            <li><a href="javascript: void(0)" ng-click="multiExec()">MultiExec</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#">{{ UserInfo.displayName }}</a></li>
@@ -52,10 +54,48 @@
     </div>
 
     <div class="side-bar">
-
+      <ul ng-if="sidebarInfo">
+        <li class="has-children" id="{{'parent_server_list_'+$index}}" ng-repeat="(key, value) in sidebarInfo">
+          <div class="group-name" ng-click="toggleServerList('server_list_'+$index)">
+            <span>{{key}}</span>
+            <i class="fa fa-caret-down"></i>
+          </div>
+          <ul class="server-list" id="{{'server_list_'+$index}}" style="display: none;">
+            <li ng-repeat="server in value">
+              <div ng-click="connectServer(server)">
+                {{server.displayName}}
+                <span ng-if="!server.displayName">{{ server.ip }}{{(server.port == '22' ? '' : ':'+server.port )}}</span>
+              </div>
+              <div ng-click="editServer(server)">
+                <i class="fa fa-pencil"></i>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </div>
-    <div class="content">
-
+    <div class="content" id="content_panel">
+      <div>
+        <ul class="nav nav-tabs" role="tablist" ng-if="!multiExecMode">
+          <li role="presentation" ng-repeat="item in connectedServer track by $index" ng-class="{'active': activeTab == item._id }">
+            <a href="javascript:void(0)" aria-controls="home" role="tab" data-toggle="tab" ng-click="setActiveTab(item)">
+              {{item.user}}@{{item.ip}}{{item.port == '22' ? '' : ':' + item.port }}
+              <i class="fa fa-remove m-l-sm" style="cursor: pointer" ng-click="closeTab($event, item)"></i>
+            </a>
+          </li>
+        </ul>
+        <div class="m-t-sm" ng-class="{'tab-content': !multiExecMode, 'multi-term': multiExecMode}">
+          <div class="tab-pane fade" ng-class="{'active in': activeTab == item._id || multiExecMode }" ng-repeat="item in connectedServer track by $index">
+            <div id="{{'term_'+item._id}}"></div>
+            <div class="checkbox no-margin" ng-if="multiExecMode">
+              <label style="color: black">
+                <input type="checkbox" ng-model="item.disableMultiExec"> Disable this terminal from 'MultiExec' mode&nbsp;&nbsp;
+                <strong class="text-danger">{{item.user}}@{{item.ip}}{{item.port == '22' ? '' : ':' + item.port }}</strong>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -68,33 +108,24 @@
         </div>
         <div class="modal-body">
           <form novalidate name="connectServerForm" ng-submit="connectToServer()">
-            <div class="form-group">
+            <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && (connectServerForm.host.$invalid || connectServerForm.port.$invalid)}">
               <label>Host</label>
               <div class="input-group">
-                <input type="text" class="form-control" name="host" placeholder="IP Address" ng-model="connectToServerInfo.host" required
-                  ng-pattern="/^((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))$/">
+                <input type="text" class="form-control" name="host" placeholder="IP Address" ng-model="connectToServerInfo.ip" required ng-pattern="/^((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))$/">
                 <span class="input-group-addon">:</span>
                 <input type="number" class="form-control" name="port" placeholder="22" min="1" max="65535" ng-pattern="/^[1-9]?[0-9]*$/"
                   ng-model="connectToServerInfo.port">
               </div>
-            </div>
-            <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.host.$invalid}">
-              <label class="control-label">Host</label>
-              <input type="text" class="form-control" name="host" placeholder="IP Address" ng-model="connectToServerInfo.host" required
-                ng-pattern="/^((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))$/">
-              <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.host.$invalid">
-                <span ng-if="connectServerForm.host.$error.required">Host is required</span>
-                <span ng-if="connectServerForm.host.$error.pattern">Invalid ip address</span>
-              </div>
-            </div>
-            <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.port.$invalid}">
-              <label class="control-label">Port</label>
-              <input type="number" class="form-control" name="port" placeholder="22" min="1" max="65535" ng-pattern="/^[1-9]?[0-9]*$/"
-                ng-model="connectToServerInfo.port">
-              <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.port.$invalid">
-                <span ng-if="connectServerForm.port.$error.min">Port cannot less than 1</span>
-                <span ng-if="connectServerForm.port.$error.max">Port cannot more than 65535</span>
-                <span ng-if="connectServerForm.port.$error.pattern">Port must be an integer</span>
+              <div class="flex-display">
+                <div class="help-block no-margin" ng-if="connectToServerSubmitted && connectServerForm.host.$invalid">
+                  <span ng-if="connectServerForm.host.$error.required">Host is required</span>
+                  <span ng-if="connectServerForm.host.$error.pattern">Invalid ip address</span>
+                </div>
+                <div class="help-block no-margin" style="flex: initial; width: 172px;" ng-if="connectToServerSubmitted && connectServerForm.port.$invalid">
+                  <span ng-if="connectServerForm.port.$error.min">Port cannot less than 1</span>
+                  <span ng-if="connectServerForm.port.$error.max">Port cannot more than 65535</span>
+                  <span ng-if="connectServerForm.port.$error.pattern && !connectServerForm.port.$error.min">Port must be an integer</span>
+                </div>
               </div>
             </div>
             <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.user.$invalid}">
@@ -109,8 +140,8 @@
             </div>
             <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.password.$invalid}">
               <label class="control-label">Password</label>
-              <input type="password" class="form-control" name="password" ng-model="connectToServerInfo.password" required maxlength="30"
-                ng-maxlength="30">
+              <input type="password" class="form-control" name="password" ng-required="!isEditServer" ng-model="connectToServerInfo.password"
+                required maxlength="30" ng-maxlength="30">
               <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.password.$invalid">
                 <span ng-if="connectServerForm.password.$error.required">Password is required</span>
                 <span ng-if="connectServerForm.password.$error.maxlength">Password cannot be longer than 30 characters</span>
@@ -119,11 +150,11 @@
             <div class="flex-display">
               <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.displayName.$invalid}">
                 <label class="control-label">DisplayName</label>
-                <input type="text" class="form-control" name="displayName" maxlength="10" ng-maxlength="10" ng-pattern="/^[0-9a-zA-Z_-]$/"
+                <input type="text" class="form-control" name="displayName" maxlength="16" ng-maxlength="16" ng-pattern="/^[0-9a-zA-Z@_.-]*$/"
                   ng-model="connectToServerInfo.displayName">
                 <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.displayName.$invalid">
                   <span ng-if="connectServerForm.displayName.$error.pattern">Display name cannot contains any special characters</span>
-                  <span ng-if="connectServerForm.displayName.$error.maxlength">Display name  cannot be longer than 10 characters</span>
+                  <span ng-if="connectServerForm.displayName.$error.maxlength">Display name  cannot be longer than 16 characters</span>
                 </div>
               </div>
               <div class="form-group" ng-if="connectToServerInfo.saveToCloud">
@@ -133,9 +164,8 @@
                 </select>
               </div>
             </div>
-
             <div class="form-group checkbox-panel">
-              <div class="checkbox">
+              <div class="checkbox" ng-if="!isEditServer">
                 <label>
                   <input type="checkbox" name="saveToCloude" ng-model="connectToServerInfo.saveToCloud"> Save To Cloud
                 </label>
@@ -148,9 +178,39 @@
             </div>
             <div class="form-group">
               <button type="submit" class="btn btn-primary">
-                <i class="fa fa-connect"></i> Connect
+                <i class="fa fa-connect"></i> {{ isEditServer ? 'Save' : 'Connect' }}
               </button>
+              <button type="button" class="btn btn-danger" ng-if="isEditServer && connectToServerInfo._id" ng-click="deleteServer()">Delete</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="server_password_modal">
+    <div class="modal-dialog" data-backdrop="static">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Server Passwod</h4>
+        </div>
+        <div class="modal-body">
+          <form novalidate name="serverPasswordInputForm" ng-submit="submitPasswodPrompt()">
+            <div class="form-group" ng-class="{'has-error': passPromptSubmitted && serverPasswordInputForm.password.$invalid}">
+              <label class="control-label">Password</label>
+              <input type="password" class="form-control" name="password" required ng-model="passwordPromptValue" required maxlength="30"
+                ng-maxlength="30">
+              <div class="help-block" ng-if="passPromptSubmitted && serverPasswordInputForm.password.$invalid">
+                <span ng-if="connectServerForm.password.$error.required">Password is required</span>
+                <span ng-if="connectServerForm.password.$error.maxlength">Password cannot be longer than 30 characters</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">
+                Connect
+              </button>
             </div>
           </form>
         </div>
@@ -162,6 +222,9 @@
   <script src="js/vendor/bootstrap.min.js"></script>
   <script src="js/vendor/toastr.min.js"></script>
   <script src="js/vendor/lodash.min.js"></script>
+  <script src="js/vendor/xterm.min.js"></script>
+  <script src="js/vendor/attach.min.js"></script>
+  <script src="js/vendor/fit.min.js"></script>
   <script src="js/vendor/angular.min.js"></script>
   <script src="js/site.js"></script>
   <script src="js/app.js"></script>
