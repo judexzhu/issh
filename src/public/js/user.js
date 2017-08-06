@@ -1,4 +1,4 @@
-app.controller('UserCtrl', ['$scope', '$http', function ($scope, $http) {
+app.controller('UserCtrl', ['$rootScope', '$scope', '$http', function ($rootScope, $scope, $http) {
 
   $scope.submitted = false;
 
@@ -32,6 +32,7 @@ app.controller('UserCtrl', ['$scope', '$http', function ($scope, $http) {
     $http.post('/api/user/login', $scope.signinInfo)
       .then(function (res) {
         toastr.success("Sign in suceed.");
+        $rootScope.UserInfo = res.data;
         $scope.$emit("UserCtrlChange", { isLogin: true });
       }, function (errRes) {
         toastr.error('Username or Password is not correct');
