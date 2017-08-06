@@ -3,6 +3,24 @@ body {
   background: white;
 }
 
+.flex-display {
+  display: flex;
+}
+
+.flex-display>* {
+  flex: 1;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.flex-display>*:first-child {
+  margin-left: 0;
+}
+
+.flex-display>*:last-child {
+  margin-right: 0;
+}
+
 .navbar {
   margin-bottom: 0;
 }
@@ -69,6 +87,10 @@ body.mini-sidebar .content {
 
 .checkbox-panel>div:last-child {
   margin-right: 0;
+}
+
+.checkbox-panel .checkbox label {
+  font-size: 14px;
 }
 
 .radio+.radio,

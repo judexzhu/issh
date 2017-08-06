@@ -68,6 +68,16 @@
         </div>
         <div class="modal-body">
           <form novalidate name="connectServerForm" ng-submit="connectToServer()">
+            <div class="form-group">
+              <label>Host</label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="host" placeholder="IP Address" ng-model="connectToServerInfo.host" required
+                  ng-pattern="/^((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))$/">
+                <span class="input-group-addon">:</span>
+                <input type="number" class="form-control" name="port" placeholder="22" min="1" max="65535" ng-pattern="/^[1-9]?[0-9]*$/"
+                  ng-model="connectToServerInfo.port">
+              </div>
+            </div>
             <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.host.$invalid}">
               <label class="control-label">Host</label>
               <input type="text" class="form-control" name="host" placeholder="IP Address" ng-model="connectToServerInfo.host" required
@@ -106,15 +116,24 @@
                 <span ng-if="connectServerForm.password.$error.maxlength">Password cannot be longer than 30 characters</span>
               </div>
             </div>
-            <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.displayName.$invalid}">
-              <label class="control-label">DisplayName</label>
-              <input type="text" class="form-control" name="displayName" maxlength="10" ng-maxlength="10" ng-pattern="/^[0-9a-zA-Z_-]$/"
-                ng-model="connectToServerInfo.displayName">
-              <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.displayName.$invalid">
-                <span ng-if="connectServerForm.displayName.$error.pattern">Display name cannot contains any special characters</span>
-                <span ng-if="connectServerForm.displayName.$error.maxlength">Display name  cannot be longer than 10 characters</span>
+            <div class="flex-display">
+              <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.displayName.$invalid}">
+                <label class="control-label">DisplayName</label>
+                <input type="text" class="form-control" name="displayName" maxlength="10" ng-maxlength="10" ng-pattern="/^[0-9a-zA-Z_-]$/"
+                  ng-model="connectToServerInfo.displayName">
+                <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.displayName.$invalid">
+                  <span ng-if="connectServerForm.displayName.$error.pattern">Display name cannot contains any special characters</span>
+                  <span ng-if="connectServerForm.displayName.$error.maxlength">Display name  cannot be longer than 10 characters</span>
+                </div>
+              </div>
+              <div class="form-group" ng-if="connectToServerInfo.saveToCloud">
+                <label class="control-label">Group</label>
+                <select name="group" class="form-control" ng-model="connectToServerInfo.group">                  
+                  <option value="{{item}}" ng-repeat="item in groups">{{item}}</option>
+                </select>
               </div>
             </div>
+
             <div class="form-group checkbox-panel">
               <div class="checkbox">
                 <label>
@@ -125,11 +144,6 @@
                 <label>
                   <input type="checkbox" name="rememberPass" ng-model="connectToServerInfo.rememberPass"> Save Password
                 </label>
-              </div>
-              <div ng-if="connectToServerInfo.saveToCloud">
-                <select name="group" class="form-control" ng-model="connectToServerInfo.group">                  
-                  <option value="{{item}}" ng-repeat="item in groups">{{item}}</option>
-                </select>
               </div>
             </div>
             <div class="form-group">
