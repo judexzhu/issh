@@ -39,7 +39,7 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li><a href="#">Connect</a></li>
+            <li><a href="javascript: void(0)" ng-click="showConnectToServerModal()">Connect</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#">{{ UserInfo.displayName }}</a></li>
@@ -59,13 +59,99 @@
     </div>
   </div>
 
+  <div class="modal" id="connect_server_modal">
+    <div class="modal-dialog" data-backdrop="static">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Connect to server</h4>
+        </div>
+        <div class="modal-body">
+          <form novalidate name="connectServerForm" ng-submit="connectToServer()">
+            <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.host.$invalid}">
+              <label class="control-label">Host</label>
+              <input type="text" class="form-control" name="host" placeholder="IP Address" ng-model="connectToServerInfo.host" required
+                ng-pattern="/^((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))$/">
+              <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.host.$invalid">
+                <span ng-if="connectServerForm.host.$error.required">Host is required</span>
+                <span ng-if="connectServerForm.host.$error.pattern">Invalid ip address</span>
+              </div>
+            </div>
+            <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.port.$invalid}">
+              <label class="control-label">Port</label>
+              <input type="number" class="form-control" name="port" placeholder="22" min="1" max="65535" ng-pattern="/^[1-9]?[0-9]*$/"
+                ng-model="connectToServerInfo.port">
+              <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.port.$invalid">
+                <span ng-if="connectServerForm.port.$error.min">Port cannot less than 1</span>
+                <span ng-if="connectServerForm.port.$error.max">Port cannot more than 65535</span>
+                <span ng-if="connectServerForm.port.$error.pattern">Port must be an integer</span>
+              </div>
+            </div>
+            <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.user.$invalid}">
+              <label class="control-label">User</label>
+              <input type="text" class="form-control" name="user" ng-model="connectToServerInfo.user" required maxlength="16" ng-maxlength="16"
+                ng-pattern="/^[0-9a-zA-Z@_.-]*$/">
+              <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.user.$invalid">
+                <span ng-if="connectServerForm.user.$error.required">User is required</span>
+                <span ng-if="connectServerForm.user.$error.maxlength">User cannot be longer than 16 characters</span>
+                <span ng-if="connectServerForm.user.$error.pattern">User cannot contains any special characters</span>
+              </div>
+            </div>
+            <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.password.$invalid}">
+              <label class="control-label">Password</label>
+              <input type="password" class="form-control" name="password" ng-model="connectToServerInfo.password" required maxlength="30"
+                ng-maxlength="30">
+              <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.password.$invalid">
+                <span ng-if="connectServerForm.password.$error.required">Password is required</span>
+                <span ng-if="connectServerForm.password.$error.maxlength">Password cannot be longer than 30 characters</span>
+              </div>
+            </div>
+            <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.displayName.$invalid}">
+              <label class="control-label">DisplayName</label>
+              <input type="text" class="form-control" name="displayName" maxlength="10" ng-maxlength="10" ng-pattern="/^[0-9a-zA-Z_-]$/"
+                ng-model="connectToServerInfo.displayName">
+              <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.displayName.$invalid">
+                <span ng-if="connectServerForm.displayName.$error.pattern">Display name cannot contains any special characters</span>
+                <span ng-if="connectServerForm.displayName.$error.maxlength">Display name  cannot be longer than 10 characters</span>
+              </div>
+            </div>
+            <div class="form-group checkbox-panel">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="saveToCloude" ng-model="connectToServerInfo.saveToCloud"> Save To Cloud
+                </label>
+              </div>
+              <div class="checkbox" ng-if="connectToServerInfo.saveToCloud">
+                <label>
+                  <input type="checkbox" name="rememberPass" ng-model="connectToServerInfo.rememberPass"> Save Password
+                </label>
+              </div>
+              <div ng-if="connectToServerInfo.saveToCloud">
+                <select name="group" class="form-control" ng-model="connectToServerInfo.group">                  
+                  <option value="{{item}}" ng-repeat="item in groups">{{item}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">
+                <i class="fa fa-connect"></i> Connect
+              </button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="js/vendor/jquery.min.js"></script>
   <script src="js/vendor/bootstrap.min.js"></script>
   <script src="js/vendor/toastr.min.js"></script>
+  <script src="js/vendor/lodash.min.js"></script>
   <script src="js/vendor/angular.min.js"></script>
   <script src="js/site.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/main.js"></script>
   <script src="js/user.js"></script>
 </body>
 

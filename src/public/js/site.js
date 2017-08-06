@@ -14,3 +14,7 @@ toastr.options = {
   "showMethod": "fadeIn",
   "hideMethod": "fadeOut"
 }
+
+$(document).ready(function () {
+  $('input').attr('autocomplete', 'off');
+})

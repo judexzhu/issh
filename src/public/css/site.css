@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   background: white;
 }
 
@@ -57,6 +58,24 @@ body.mini-sidebar .content {
   margin-left: 0;
 }
 
+.checkbox-panel {
+  display: flex;
+}
+
+.checkbox-panel>div {
+  margin: 0;
+  margin-right: 10px;
+}
+
+.checkbox-panel>div:last-child {
+  margin-right: 0;
+}
+
+.radio+.radio,
+.checkbox+.checkbox {
+  margin-top: initial;
+}
+
 .login-page {
   position: fixed;
   width: 100%;
@@ -75,7 +94,7 @@ body.mini-sidebar .content {
   margin-bottom: 20px;
 }
 
-.login-page .form-panel {  
+.login-page .form-panel {
   width: 100%;
 }
 
@@ -92,6 +111,7 @@ body.mini-sidebar .content {
   color: darkgray;
 }
 
-.has-error .form-control, .has-error .form-control:focus {
+.has-error .form-control,
+.has-error .form-control:focus {
   border-width: 2px;
 }
