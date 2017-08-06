@@ -29,12 +29,36 @@ exports.getUserInfo = (req, res, next) => {
 }
 
 exports.updateUserServers = (req, res, next) => {
-  var servers = req.body;
-  var username = req.user.userName;
+  var server = req.body;
+  var userName = req.user.userName;
+  ensureServerId(server);
 
-  da.updateUserServers({ userName: username, servers: servers })
-    .then(() => res.sendStatus(200))
-    .catch((err) => next(err));
+  updateServers(userName, server._id, server)
+  .then(() => res.sendStatus(202))
+  .catch((err) => next(err));
+}
+
+exports.removeUserServers = (req, res, next) =>{
+  var serverId = req.params.id;
+  var userName = req.user.userName;
+
+  updateServers(userName, serverId)
+  .then(() => res.sendStatus(202))
+  .catch((err) => next(err));
+}
+
+let updateServers = async (userName, serverId, newServer) => {
+  var user = await da.findUserServerById(userName, serverId);
+  if(user){
+    await da.removeUserServers(userName, user.servers[0]);
+  }
+  if(newServer){    
+    await da.updateUserServers(userName, newServer);
+  }
+}
+
+let ensureServerId = (server) => {
+  server._id = server._id || `${server.user}@${server.ip}`;
 }
 
 exports.registerUser = (req, res, next) => {

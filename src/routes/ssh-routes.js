@@ -7,5 +7,6 @@ module.exports = (app) => {
   app.post('/api/user/ssologin', passport.authenticate('sso'), userBiz.ssoLogin);
   app.get('/api/user', ensureLoggedIn, userBiz.getUserInfo);
   app.put('/api/user/servers', ensureLoggedIn, userBiz.updateUserServers);
+  app.delete('/api/user/servers/:id', ensureLoggedIn, userBiz.removeUserServers);
   app.post('/api/user/register', userBiz.registerUser);
 };
