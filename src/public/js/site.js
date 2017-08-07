@@ -17,4 +17,44 @@ toastr.options = {
 
 $(document).ready(function () {
   $('input').attr('autocomplete', 'off');
-})
+});
+
+function getQueryString(name) {
+  var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+  var r = window.location.search.substr(1).match(reg);
+  if (r != null) {
+    return unescape(r[2]);
+  }
+  return null;
+}
+
+var globalLoading = {
+
+  count: 0,
+
+  add: function () {
+    if (this.count === 0) {
+      this.show();
+    }
+    this.count++;
+  },
+
+  sub: function () {
+    this.count--;
+    if (this.count <= 0) {
+      this.count = 0;
+      this.hide();
+    }
+  },
+
+  show: function () {
+    $('#global-loading').show();
+  },
+
+  hide: function () {
+    setTimeout(function () {
+      $('#global-loading').hide();
+    }, 200);
+  }
+
+}

@@ -97,8 +97,12 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
     $scope.connectToServerSubmitted = true;
     if ($scope.connectServerForm.$invalid) return;
     var data = _.cloneDeep($scope.connectToServerInfo);
+    if (data.group === '__new_group__') {
+      data.group = data.newGroup;
+      delete data.newGroup;
+    }
     data.port = data.port || 22;
-    data._id = data._id || (data.user + '@' + data.ip);
+    data._id = data._id || (data.user + '@' + data.ip + ':' + data.port);
     if (data.saveToCloud) {
       if (!data.rememberPass) {
         data.password = '';
@@ -137,9 +141,7 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
     if (!server.password) {
       $scope.showPasswordPrompt();
     } else {
-      if (!$scope.isEditServer) {
-        $scope.addConnectedServer(server);
-      }
+      $scope.addConnectedServer(server);
     }
   }
 
@@ -196,6 +198,7 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
         rows = Math.floor((contentElement.offsetHeight - 60) / 21);
       }
     }
+    if (rows < 15) rows = 15;
     var data = {
       cols: cols,
       rows: rows
@@ -204,7 +207,10 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
   }
 
   $scope.addConnectedServer = function (server, password) {
-    if ($scope.connectedServer.length > 10) {
+    var notClosed = _.countBy($scope.connectedServer, function (x) {
+      return !!x._closed;
+    });
+    if (notClosed > 10) {
       toastr.error('Up to 10 servers can be connected');
       return;
     }
@@ -240,7 +246,8 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
       server.term = term;
 
       term.on('key', function (key, ev) {
-        var self = this;      
+        if (!$scope.multiExecMode) return;
+        var self = this;
         $scope.webSockets.forEach(function (x) {
           if (!x.server.disableMultiExec && x.server._wsid !== selfWs._id) {
             x.send(key);
@@ -268,17 +275,25 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
       $scope.delConnectedServer(self.server._id);
       console.log("Disconnected. Current sockets nums: ", $scope.webSockets.length);
     };
-    $scope.webSockets.push(ws);    
+    $scope.webSockets.push(ws);
   }
 
   $scope.delConnectedServer = function (id) {
-    _.remove($scope.connectedServer, function (x) {
-      return x._id === id;
+    $scope.connectedServer.forEach(function (x) {
+      if (x._id === id) {
+        x._closed = true;
+      }
     });
-    $scope.$apply();
-    if ($scope.activeTab === id) {
-      $scope.activeTab = $scope.connectedServer[0] ? $scope.connectedServer[0]._id : '';
+    var notClosed = _.filter($scope.connectedServer, function (x) {
+      return !x._closed;
+    });
+    if (notClosed.length === 0) {
+      $scope.connectedServer = [];
+      $scope.multiExecMode = false;
+    } else if ($scope.activeTab === id) {
+      $scope.activeTab = notClosed[0] ? notClosed[0]._id : '';
     }
+    $scope.$apply();
   }
 
   $scope.setActiveTab = function (item) {
@@ -293,11 +308,21 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
     ws.close();
   }
 
-  $scope.multiExec = function () {    
+  $scope.multiExec = function () {
+    if ($scope.connectedServer.length < 2) return;
     $scope.multiExecMode = !$scope.multiExecMode;
     $scope.connectedServer.forEach(function (x) {
       x.disableMultiExec = false;
     });
     $scope.resize();
+  }
+
+  $scope.signOut = function () {
+    $http.get('/api/user/logout')
+      .then(function (data) {
+        location.href = '/';
+      }, function (errData) {
+        toastr.error('Sign out failed. Please try again.')
+      });
   }
 }]);

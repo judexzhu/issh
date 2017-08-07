@@ -53,7 +53,7 @@ app.controller('UserCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
         toastr.success('Register succeed');
         $scope.showSignIn();
       }, function (errRes) {
-        toastr.error('Register failed');
+        toastr.error('Register failed - ' + errRes.data.error.message);
       });
   }
 

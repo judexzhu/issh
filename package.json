@@ -4,7 +4,7 @@
   "description": "A useful web application to the command line \"ssh\"",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "nodemon src/index.js -i src/public/"
   },
   "repository": {
     "type": "git",

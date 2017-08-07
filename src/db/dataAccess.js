@@ -17,7 +17,7 @@ let db = new Datastore({ filename: path.join(__dirname, 'ssh.db'), autoload: tru
 //         user: 'leon',
 //         password: 'leon',
 //         group: group1,
-//         _id: leon@10.16.75.24
+//         _id: leon@10.16.75.24:22
 //       }
 //     ]
 // }

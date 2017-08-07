@@ -12,6 +12,11 @@ exports.ssoLogin = (req, res, next) => {
     .catch((error) => next(error));
 }
 
+exports.logout = (req, res, next) => {
+  req.logout();
+  res.redirect('/');
+}
+
 let handleSSOLogin = async (newUser) => {
   var user = await da.findUserByName(newUser.userName);
   if (!user) {
@@ -60,7 +65,7 @@ let updateServers = async (userName, serverId, newServer) => {
 }
 
 let ensureServerId = (server) => {
-  server._id = server._id || `${server.user}@${server.ip}`;
+  server._id = server._id || `${server.user}@${server.ip}:${server.port}"`;
   server.displayName = server.displayName || server._id;
 }
 

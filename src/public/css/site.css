@@ -1,5 +1,4 @@
-html,
-body {
+html, body {
   background: white;
 }
 
@@ -80,8 +79,7 @@ body {
   line-height: 34px;
 }
 
-.side-bar ul li div.active,
-.side-bar ul li div:hover {
+.side-bar ul li div.active, .side-bar ul li div:hover {
   color: tomato;
   font-weight: 700;
 }
@@ -132,6 +130,8 @@ body {
 
 .server-list li>div:first-child {
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .server-list li>div:last-child {
@@ -155,9 +155,23 @@ body {
 }
 
 .multi-term .tab-pane {
-  width: 50%;  
-  margin-bottom: 10px;  
+  width: 50%;
+  margin-bottom: 10px;
   display: block;
+}
+
+.multi-term .term {
+  position: relative;
+}
+
+.multi-term .term.disabled::after {
+  background-color: rgba(255, 255, 255, .5);
+  content: '  ';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .nav-tabs>li>a {
@@ -165,8 +179,7 @@ body {
   color: initial;
 }
 
-.nav-tabs>li.active>a,
-.nav-tabs>li>a:hover {
+.nav-tabs>li.active>a, .nav-tabs>li>a:hover {
   color: white;
   font-weight: 600;
 }
@@ -198,8 +211,7 @@ body.mini-sidebar .content {
   font-size: 14px;
 }
 
-.radio+.radio,
-.checkbox+.checkbox {
+.radio+.radio, .checkbox+.checkbox {
   margin-top: initial;
 }
 
@@ -238,15 +250,11 @@ body.mini-sidebar .content {
   color: darkgray;
 }
 
-.has-error .form-control,
-.has-error .form-control:focus {
+.has-error .form-control, .has-error .form-control:focus {
   border-width: 2px;
 }
 
-label,
-.radio label,
-.checkbox label,
-.help-block {
+label, .radio label, .checkbox label, .help-block {
   font-size: 13px;
 }
 
@@ -265,4 +273,60 @@ label,
 .navbar-default .navbar-nav>li>a {
   font-size: larger;
   font-weight: 600;
+}
+
+#global-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 1);
+  z-index: 9999;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
+
+#global-loading>div {
+  margin-top: -50px;
+}
+
+#global-loading i {
+  font-size: 80px;
+  font-weight: 700;
+}
+
+#global-loading span {
+  margin: 0 17px;
+  font-size: 70px;
+}
+
+.title-h {
+  font-size: 1.8rem;
+  padding-top: 6%;
+  margin-bottom: 5%;
+  font-weight: normal;
+  letter-spacing: .3rem;
+  -webkit-animation: type 3s steps(50, end) infinite;
+  animation: type 3s steps(50, end) infinite;
+}
+
+.typing {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+@-webkit-keyframes type {
+  from {
+    width: 1px;
+  }
+}
+
+@keyframes type {
+  from {
+    width: 1px;
+  }
 }

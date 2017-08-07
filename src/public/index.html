@@ -44,7 +44,12 @@
             <li><a href="javascript: void(0)" ng-click="multiExec()">MultiExec</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">{{ UserInfo.displayName }}</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user-info">{{ UserInfo.displayName }} <span class="caret"></span></a>
+              <ul class="dropdown-menu" aria-labelledby="user-info">
+                <li><a href="javascript: void(0)" ng-click="signOut()">Sign Out</a></li>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
@@ -61,7 +66,7 @@
             <i class="fa fa-caret-down"></i>
           </div>
           <ul class="server-list" id="{{'server_list_'+$index}}" style="display: none;">
-            <li ng-repeat="server in value">
+            <li ng-repeat="server in value" title="{{ server.ip }}{{(server.port == '22' ? '' : ':'+server.port )}}">
               <div ng-click="connectServer(server)">
                 {{server.displayName}}
                 <span ng-if="!server.displayName">{{ server.ip }}{{(server.port == '22' ? '' : ':'+server.port )}}</span>
@@ -77,7 +82,7 @@
     <div class="content" id="content_panel">
       <div>
         <ul class="nav nav-tabs" role="tablist" ng-if="!multiExecMode">
-          <li role="presentation" ng-repeat="item in connectedServer track by $index" ng-class="{'active': activeTab == item._id }">
+          <li role="presentation" ng-repeat="item in connectedServer track by $index" ng-if="!item._closed" ng-class="{'active': activeTab == item._id }">
             <a href="javascript:void(0)" aria-controls="home" role="tab" data-toggle="tab" ng-click="setActiveTab(item)">
               {{item.user}}@{{item.ip}}{{item.port == '22' ? '' : ':' + item.port }}
               <i class="fa fa-remove m-l-sm" style="cursor: pointer" ng-click="closeTab($event, item)"></i>
@@ -85,8 +90,9 @@
           </li>
         </ul>
         <div class="m-t-sm" ng-class="{'tab-content': !multiExecMode, 'multi-term': multiExecMode}">
-          <div class="tab-pane fade" ng-class="{'active in': activeTab == item._id || multiExecMode }" ng-repeat="item in connectedServer track by $index">
-            <div id="{{'term_'+item._id}}"></div>
+          <div class="tab-pane fade" ng-class="{'active in': activeTab == item._id || multiExecMode }" ng-repeat="item in connectedServer track by $index"
+            ng-if="!item._closed">
+            <div id="{{'term_'+item._id}}" class="term" ng-class="{'disabled': multiExecMode && item.disableMultiExec}"></div>
             <div class="checkbox no-margin" ng-if="multiExecMode">
               <label style="color: black">
                 <input type="checkbox" ng-model="item.disableMultiExec"> Disable this terminal from 'MultiExec' mode&nbsp;&nbsp;
@@ -147,21 +153,34 @@
                 <span ng-if="connectServerForm.password.$error.maxlength">Password cannot be longer than 30 characters</span>
               </div>
             </div>
-            <div class="flex-display">
-              <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.displayName.$invalid}">
-                <label class="control-label">DisplayName</label>
-                <input type="text" class="form-control" name="displayName" maxlength="16" ng-maxlength="16" ng-pattern="/^[0-9a-zA-Z@_.-]*$/"
-                  ng-model="connectToServerInfo.displayName">
-                <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.displayName.$invalid">
-                  <span ng-if="connectServerForm.displayName.$error.pattern">Display name cannot contains any special characters</span>
-                  <span ng-if="connectServerForm.displayName.$error.maxlength">Display name  cannot be longer than 16 characters</span>
-                </div>
+            <div class="form-group" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.displayName.$invalid}">
+              <label class="control-label">DisplayName</label>
+              <input type="text" class="form-control" name="displayName" maxlength="30" ng-maxlength="30" ng-pattern="/^[0-9a-zA-Z@_.:-]*$/"
+                ng-model="connectToServerInfo.displayName">
+              <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.displayName.$invalid">
+                <span ng-if="connectServerForm.displayName.$error.pattern">Display name cannot contains any special characters</span>
+                <span ng-if="connectServerForm.displayName.$error.maxlength">Display name  cannot be longer than 30 characters</span>
               </div>
-              <div class="form-group" ng-if="connectToServerInfo.saveToCloud">
+            </div>
+            <div class="flex-display" ng-if="connectToServerInfo.saveToCloud">
+              <div class="form-group">
                 <label class="control-label">Group</label>
                 <select name="group" class="form-control" ng-model="connectToServerInfo.group">                  
                   <option value="{{item}}" ng-repeat="item in groups">{{item}}</option>
+                  <option value="__new_group__">
+                    <i class="fa fa-plus"></i> New Group
+                  </option>
                 </select>
+              </div>
+              <div class="form-group" ng-if="connectToServerInfo.group == '__new_group__'" ng-class="{'has-error': connectToServerSubmitted && connectServerForm.newGroupName.$invalid }">
+                <label class="control-label">New Group Name</label>
+                <input type="text" class="form-control" name="newGroupName" maxlength="15" ng-maxlength="15" required ng-pattern="/^[0-9a-zA-Z_]*$/"
+                  ng-model="connectToServerInfo.newGroup">
+                <div class="help-block" ng-if="connectToServerSubmitted && connectServerForm.newGroupName.$invalid">
+                  <span ng-if="connectServerForm.newGroupName.$error.required">Group name is required</span>
+                  <span ng-if="connectServerForm.newGroupName.$error.pattern">Group name cannot contains any special characters</span>
+                  <span ng-if="connectServerForm.newGroupName.$error.maxlength">Group name  cannot be longer than 15 characters</span>
+                </div>
               </div>
             </div>
             <div class="form-group checkbox-panel">
@@ -214,6 +233,20 @@
             </div>
           </form>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="global-loading">
+    <div>
+      <div>
+        <i class="fa fa-terminal"></i>
+        <span>
+          <span class="text-danger">i</span>SSH
+        </span>
+      </div>
+      <div class="title-h typing">
+        ssh root@8.8.8.8 -p 8888
       </div>
     </div>
   </div>
