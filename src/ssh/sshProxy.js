@@ -12,7 +12,6 @@ exports.handler = (wss) => {
 let install_ws_listeners = (ws) => {
 
   ws.isAlive = true;
-  ws.sshClient.command = '';
   ws.on('pong', () => this.isAlive = true);
 
   ws.on('message', (message) => {
@@ -44,19 +43,19 @@ let install_ws_ssh = (ws, querys) => {
   ws.sshClient
     .on('ready', () => {
 
-      ws.send("\033[1;3;31m////\033[0m    ////////////////   ////////////////   ////          ////\n");
-      ws.send("\033[1;3;31m/  /\033[0m    /              /   /              /   /  /          /  /\n");
-      ws.send("\033[1;3;31m////\033[0m    /   ////////////   /   ////////////   /  /          /  /\n");
-      ws.send("\033[1;3;31m    \033[0m    /   /              /   /              /  /          /  /\n");
-      ws.send("\033[1;3;31m////\033[0m    /   /              /   /              /  /          /  /\n");
-      ws.send("\033[1;3;31m/  /\033[0m    /   ////////////   /   ////////////   /  ////////////  /\n");
-      ws.send("\033[1;3;31m/  /\033[0m    /              /   /              /   /                /\n");
-      ws.send("\033[1;3;31m/  /\033[0m    ////////////   /   ////////////   /   /  ////////////  /\n");
-      ws.send("\033[1;3;31m/  /\033[0m               /   /              /   /   /  /          /  /\n");
-      ws.send("\033[1;3;31m/  /\033[0m               /   /              /   /   /  /          /  /\n");
-      ws.send("\033[1;3;31m/  /\033[0m    ////////////   /   ////////////   /   /  /          /  /\n");
-      ws.send("\033[1;3;31m/  /\033[0m    /              /   /              /   /  /          /  /\n");
-      ws.send("\033[1;3;31m////\033[0m    ////////////////   ////////////////   ////          ////\n");
+      ws.send(" \033[1;3;31m////\033[0m    ////////////////   ////////////////   ////          ////\n");
+      ws.send(" \033[1;3;31m/  /\033[0m    /              /   /              /   /  /          /  /\n");
+      ws.send(" \033[1;3;31m////\033[0m    /   ////////////   /   ////////////   /  /          /  /\n");
+      ws.send(" \033[1;3;31m    \033[0m    /   /              /   /              /  /          /  /\n");
+      ws.send(" \033[1;3;31m////\033[0m    /   /              /   /              /  /          /  /\n");
+      ws.send(" \033[1;3;31m/  /\033[0m    /   ////////////   /   ////////////   /  ////////////  /\n");
+      ws.send(" \033[1;3;31m/  /\033[0m    /              /   /              /   /                /\n");
+      ws.send(" \033[1;3;31m/  /\033[0m    ////////////   /   ////////////   /   /  ////////////  /\n");
+      ws.send(" \033[1;3;31m/  /\033[0m               /   /              /   /   /  /          /  /\n");
+      ws.send(" \033[1;3;31m/  /\033[0m               /   /              /   /   /  /          /  /\n");
+      ws.send(" \033[1;3;31m/  /\033[0m    ////////////   /   ////////////   /   /  /          /  /\n");
+      ws.send(" \033[1;3;31m/  /\033[0m    /              /   /              /   /  /          /  /\n");
+      ws.send(" \033[1;3;31m////\033[0m    ////////////////   ////////////////   ////          ////\n");
       ws.send("\n");
 
       ws.sshClient.shell({
@@ -66,14 +65,14 @@ let install_ws_ssh = (ws, querys) => {
         if (err) throw err;
         ws.sshClient.stream = stream;
         stream.on('close', (code, signal) => {
-          ws.send('\nSSH client has been closed\n');
-          ws.close();
+          if (ws.readyState === 1) {
+            ws.send('\nSSH client has been closed\n');
+            ws.close();
+          }
           console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
         }).on('data', (data) => {
-          ws.sshClient.command = '';
           ws.send(data.toString());
         }).stderr.on('data', (data) => {
-          ws.sshClient.command = '';
           ws.send(data.toString());
         });
 
