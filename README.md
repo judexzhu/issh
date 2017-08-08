@@ -11,9 +11,12 @@
 
 ## 页面预览
 
-![Main Page](src/docs/images/main.png)
+* 主页面
 
-![Server Page](src/docs/images/server.png)
+![Main Page](src/docs/images/main.png)   
+
+* 服务器操作页面
+![Server Page](src/docs/images/server.png)   
 
 ## 账户注册
 
