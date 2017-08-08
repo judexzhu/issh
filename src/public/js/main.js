@@ -259,9 +259,9 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
         });
       });
 
-      term.on('paste', function (data, ev) {
-        term.write(data);
-      });
+      // term.on('paste', function (data, ev) {
+      //   term.write(data);
+      // });
 
       term.attach(ws);
       setTimeout(() => {
