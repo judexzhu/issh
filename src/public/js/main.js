@@ -72,8 +72,7 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
         }
       }, function (errRes) {
         $rootScope.isLogin = false;
-        $rootScope.UserInfo = null;
-        $rootScope.$apply();
+        $rootScope.UserInfo = null;        
       });
   }
   $scope.buildSidebar();
