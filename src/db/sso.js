@@ -1,7 +1,7 @@
 const request = require('request');
 
-const ssoAddress = 'http://10.16.75.24:3000/framework/v1/keystone/sso-auth-data';
-const access_token = 'sQh5x1dFeDzFFlqAlgYwKSgOowh8iTxPzI1Q2r5i';
+const ssoAddress = 'http://apis.newegg.org/framework/v1/keystone/sso-auth-data';
+const access_token = 'giOjDe8n4nEm7qOw4SrRmgMHUgotaAjb7c7OnFQ0';
 
 exports.getSSOUser = (ssoToken) => {
   return new Promise((resolve, reject) => {
