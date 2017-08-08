@@ -71,9 +71,13 @@ let install_ws_ssh = (ws, querys) => {
           }
           console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
         }).on('data', (data) => {
-          ws.send(data.toString());
+          if (ws.readyState === 1) {
+            ws.send(data.toString());
+          }
         }).stderr.on('data', (data) => {
-          ws.send(data.toString());
+          if (ws.readyState === 1) {
+            ws.send(data.toString());
+          }
         });
 
       });
