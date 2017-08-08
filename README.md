@@ -11,11 +11,10 @@
 
 ## 页面预览
 
-* 主页面
-
+* 主页面   
 ![Main Page](src/docs/images/main.png)   
 
-* 服务器操作页面
+* 服务器操作页面   
 ![Server Page](src/docs/images/server.png)   
 
 ## 账户注册
