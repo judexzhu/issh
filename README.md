@@ -11,7 +11,7 @@
 
 ## 页面预览
 
-![Main Page](blob/master/src/docs/images/main.png)
+![Main Page](src/docs/images/main.png)
 
 ![Server Page](blob/master/src/docs/images/server.png)
 
