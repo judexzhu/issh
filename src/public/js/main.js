@@ -72,6 +72,8 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
         }
       }, function (errRes) {
         $rootScope.isLogin = false;
+        $rootScope.UserInfo = null;
+        $rootScope.$apply();
       });
   }
   $scope.buildSidebar();
@@ -102,8 +104,9 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
       delete data.newGroup;
     }
     data.port = data.port || 22;
-    data._id = data._id || (data.user + '@' + data.ip + ':' + data.port);
+    data._id = data._id || (data.user + '@' + data.ip + (data.port === 22 ? '' : ':' + data.port));
     if (data.saveToCloud) {
+      var pass = data.password;
       if (!data.rememberPass) {
         data.password = '';
       }
@@ -111,13 +114,14 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
         .then(function (resData) {
           $scope.buildSidebar();
           if (!$scope.isEditServer) {
+            data.password = pass;
             $scope.addConnectedServer(data);
           }
           $scope.hideConnectServerModal();
         }, function (errData) {
           $scope.hideConnectServerModal();
         });
-    } else {
+    } else {      
       $scope.addConnectedServer(data);
       $scope.hideConnectServerModal();
     }
@@ -215,12 +219,13 @@ app.controller('MainCtrl', ['$rootScope', '$scope', '$http', function ($rootScop
       return;
     }
     var server = _.cloneDeep(server);
+    server._id = server._id + '_' + new Date().valueOf();
     $scope.connectedServer.push(server);
     $scope.activeTab = server._id;
 
     var colsAndRows = $scope.getColsAndRows();
 
-    var wsUrl = 'ws://localhost:9999?rows=' + colsAndRows.rows + '&cols=' + colsAndRows.cols;
+    var wsUrl = 'ws://' + location.host + '?rows=' + colsAndRows.rows + '&cols=' + colsAndRows.cols;
     wsUrl += '&user=' + server.user;
     wsUrl += '&password=' + (server.password || password);
     wsUrl += '&host=' + server.ip;

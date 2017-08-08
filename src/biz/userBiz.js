@@ -65,7 +65,7 @@ let updateServers = async (userName, serverId, newServer) => {
 }
 
 let ensureServerId = (server) => {
-  server._id = server._id || `${server.user}@${server.ip}:${server.port}"`;
+  server._id = server._id || `${server.user}@${server.ip}${server.port === 22 ? '' : ':' + server.port}"`;  
   server.displayName = server.displayName || server._id;
 }
 

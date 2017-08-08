@@ -1,5 +1,7 @@
 app.controller('UserCtrl', ['$rootScope', '$scope', '$http', function ($rootScope, $scope, $http) {
 
+  $scope.localUrl = location.protocol + "//" + location.host;
+
   $scope.submitted = false;
 
   $scope.init = function () {
